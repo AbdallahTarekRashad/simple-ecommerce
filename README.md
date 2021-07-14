@@ -23,7 +23,6 @@ $ pip install -r requirements.txt
 ```commandline
 $ python manage.py makemigrations
 $ python manage.py migrate
-$ python manage.py add_countries # for fill country tabel from country.json 
 $ python manage.py createsuperuser # create superuser to use in project
 $ python manage.py runserver
 ```
