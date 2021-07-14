@@ -16,22 +16,10 @@ class OrderView(CreateModelMixin, GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         product = Product.objects.get(id=request.data['product'])
-        total = product.price * request.data['quantity']
-        if product.inventory < request.data['quantity']:
-            raise ValidationError({
-                'product': "Out Of Stock"
-            })
-        if total <= 10000:
-            product.inventory = product.inventory - request.data['quantity']
-            product.save()
-            instance = Order.objects.create(customer=request.user, product=product, quantity=request.data['quantity'],
-                                            total=total)
-        else:
-            raise ValidationError({
-                'total_of_order': "bigger than 10000.0"
-            })
+        order = Order(product=product, customer=request.user, quantity=request.data['quantity'])
+        order.save()
 
-        serializer = self.serializer_class(instance)
+        serializer = self.serializer_class(order)
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

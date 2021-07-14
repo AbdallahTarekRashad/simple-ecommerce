@@ -3,6 +3,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
+from rest_framework.exceptions import ValidationError
+
 from account.models import User
 from product.models import Product
 
@@ -33,3 +35,20 @@ class Order(models.Model):
     total = models.FloatField(
         validators=[MaxValueValidator(1000.0)],
     )
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.total = self.product.price * self.quantity
+
+        if self.product.inventory < self.quantity:
+            raise ValidationError({
+                'product': "Out Of Stock"
+            })
+        if self.total <= 10000:
+            self.product.inventory = self.product.inventory - self.request.data['quantity']
+            self.product.save()
+            super(Order, self).save(force_insert, force_update, using, update_fields)
+        else:
+            raise ValidationError({
+                'total_of_order': "bigger than 10000.0"
+            })

@@ -8,16 +8,12 @@ from django.utils.translation import gettext_lazy as _
 class Product(models.Model):
     name = models.CharField(
         max_length=128,
-        blank=False,
-        null=False,
         verbose_name=_('Name')
     )
     price = models.PositiveIntegerField(
-        null=False,
         verbose_name=_('Price')
     )
     inventory = models.PositiveIntegerField(
-        null=False,
         verbose_name=_('Inventory')
     )
 
